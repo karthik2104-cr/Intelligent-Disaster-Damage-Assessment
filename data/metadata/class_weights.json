@@ -1,0 +1,23 @@
+{
+  "task": "damage_severity",
+  "strategy": "class_weights",
+  "mode": "balanced",
+  "split": "train",
+  "classes": [
+    "little_or_none",
+    "mild",
+    "severe"
+  ],
+  "weights": [
+    0.5705536603927612,
+    4.306744575500488,
+    0.9851027727127075
+  ],
+  "weights_by_class": {
+    "little_or_none": 0.5705536531781975,
+    "severe": 0.9851027760118669,
+    "mild": 4.30674448767834
+  },
+  "imbalance_ratio": 7.548360200111173,
+  "severity": "moderate"
+}

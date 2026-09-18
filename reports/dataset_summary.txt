@@ -1,0 +1,88 @@
+Dataset Summary
+---------------
+Total images:     71198
+Valid images:     68245
+Excluded images:  2953
+Corrupted images: 1
+Missing files:    0
+Missing labels:   0
+Invalid labels:   0
+
+Class Distribution (damage_severity)
+-------------------------------------
+little_or_none :  40986  (60.06%)
+severe         :  21447  (31.43%)
+mild           :   5812  ( 8.52%)
+
+Class Distribution (disaster_types)
+------------------------------------
+not_disaster   :  35381  (51.84%)
+earthquake     :  13647  (20.00%)
+hurricane      :   6535  ( 9.58%)
+flood          :   5232  ( 7.67%)
+other_disaster :   3179  ( 4.66%)
+fire           :   2715  ( 3.98%)
+landslide      :   1556  ( 2.28%)
+
+Class Distribution (informative)
+---------------------------------
+informative     :  36555  (53.56%)
+not_informative :  31690  (46.44%)
+
+Class Distribution (humanitarian)
+----------------------------------
+not_humanitarian                       :  35797  (52.45%)
+infrastructure_and_utility_damage      :  25135  (36.83%)
+affected_injured_or_dead_people        :   4163  ( 6.10%)
+rescue_volunteering_or_donation_effort :   3150  ( 4.62%)
+
+Formats
+-------
+JPEG: 66723
+MPO: 24
+PNG: 1498
+
+Colour modes
+------------
+L: 9
+P: 4
+RGB: 67411
+RGBA: 821
+
+Channels
+--------
+1.0: 13
+3.0: 67411
+4.0: 821
+
+Image dimensions (pixels)
+-------------------------
+width_min: 37
+width_median: 749
+width_max: 8856
+height_min: 35
+height_median: 562
+height_max: 6240
+megapixels_median: 0.4264
+
+Duplicates
+----------
+Duplicate content groups: 1400
+Redundant copies:         2766
+Label-conflicting groups: 171
+
+Exclusions by reason
+--------------------
+issue_duplicate_content: 2055
+issue_conflicting_duplicate: 840
+issue_too_small: 57
+issue_unreadable: 1
+
+Official split sizes (from TSV files, before cleaning)
+-----------------------------------------------------
+dev: 6157
+test: 15688
+train: 49353
+
+Label columns present
+damage_severity, informative, humanitarian, disaster_types

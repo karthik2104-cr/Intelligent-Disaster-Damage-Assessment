@@ -1,0 +1,18 @@
+{
+  "input": "A single RGB photograph (social-media / ground-level disaster image), resized to [224, 224] and ImageNet-normalised.",
+  "target": "damage_severity",
+  "task": "multi-class image classification",
+  "classes": [
+    "little_or_none",
+    "mild",
+    "severe"
+  ],
+  "label_representation": "class name in the TSV / CSV; integer index via label_mapping.json",
+  "auxiliary_tasks": [
+    "disaster_types",
+    "informative",
+    "humanitarian"
+  ],
+  "localization_or_segmentation": false,
+  "notes": "MEDIC provides image-level labels only. There are no bounding boxes or segmentation masks in this dataset. xBD is documented separately for future localisation work; it is not required for Part 2 classification."
+}

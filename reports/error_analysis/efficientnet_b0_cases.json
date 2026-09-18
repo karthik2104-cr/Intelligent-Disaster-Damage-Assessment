@@ -1,0 +1,119 @@
+{
+  "model": "efficientnet_b0",
+  "split": "val",
+  "checkpoint": "models/efficientnet_b0/best.pt",
+  "cases": [
+    {
+      "group": "A_mild_to_little_or_none",
+      "val_index": 3013,
+      "true": "mild",
+      "predicted": "little_or_none",
+      "confidence": 0.9999886751174927
+    },
+    {
+      "group": "A_mild_to_little_or_none",
+      "val_index": 3365,
+      "true": "mild",
+      "predicted": "little_or_none",
+      "confidence": 0.9954268932342529
+    },
+    {
+      "group": "A_mild_to_little_or_none",
+      "val_index": 1344,
+      "true": "mild",
+      "predicted": "little_or_none",
+      "confidence": 0.9921675324440002
+    },
+    {
+      "group": "B_mild_to_severe",
+      "val_index": 5350,
+      "true": "mild",
+      "predicted": "severe",
+      "confidence": 0.9981743097305298
+    },
+    {
+      "group": "B_mild_to_severe",
+      "val_index": 5262,
+      "true": "mild",
+      "predicted": "severe",
+      "confidence": 0.9924669861793518
+    },
+    {
+      "group": "B_mild_to_severe",
+      "val_index": 3974,
+      "true": "mild",
+      "predicted": "severe",
+      "confidence": 0.9778598546981812
+    },
+    {
+      "group": "C_little_or_none_to_mild",
+      "val_index": 275,
+      "true": "little_or_none",
+      "predicted": "mild",
+      "confidence": 0.9465855360031128
+    },
+    {
+      "group": "C_little_or_none_to_mild",
+      "val_index": 860,
+      "true": "little_or_none",
+      "predicted": "mild",
+      "confidence": 0.9343008399009705
+    },
+    {
+      "group": "C_little_or_none_to_mild",
+      "val_index": 3782,
+      "true": "little_or_none",
+      "predicted": "mild",
+      "confidence": 0.8826636075973511
+    },
+    {
+      "group": "D_severe_to_mild",
+      "val_index": 5058,
+      "true": "severe",
+      "predicted": "mild",
+      "confidence": 0.8927275538444519
+    },
+    {
+      "group": "D_severe_to_mild",
+      "val_index": 466,
+      "true": "severe",
+      "predicted": "mild",
+      "confidence": 0.8836151361465454
+    },
+    {
+      "group": "D_severe_to_mild",
+      "val_index": 3006,
+      "true": "severe",
+      "predicted": "mild",
+      "confidence": 0.86391681432724
+    },
+    {
+      "group": "E_high_confidence_incorrect",
+      "val_index": 3013,
+      "true": "mild",
+      "predicted": "little_or_none",
+      "confidence": 0.9999886751174927
+    },
+    {
+      "group": "E_high_confidence_incorrect",
+      "val_index": 460,
+      "true": "severe",
+      "predicted": "little_or_none",
+      "confidence": 0.9995552897453308
+    },
+    {
+      "group": "E_high_confidence_incorrect",
+      "val_index": 1089,
+      "true": "severe",
+      "predicted": "little_or_none",
+      "confidence": 0.9993934631347656
+    },
+    {
+      "group": "E_high_confidence_incorrect",
+      "val_index": 5350,
+      "true": "mild",
+      "predicted": "severe",
+      "confidence": 0.9981743097305298
+    }
+  ]
+}

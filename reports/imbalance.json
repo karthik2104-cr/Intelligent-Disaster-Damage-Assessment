@@ -1,0 +1,27 @@
+{
+  "task": "damage_severity",
+  "strategy": "class_weights",
+  "counts": {
+    "little_or_none": 27159,
+    "severe": 15730,
+    "mild": 3598
+  },
+  "proportions": {
+    "little_or_none": 0.584227848645858,
+    "severe": 0.3383741691225504,
+    "mild": 0.07739798223159162
+  },
+  "class_weights": {
+    "little_or_none": 0.5705536531781975,
+    "severe": 0.9851027760118669,
+    "mild": 4.30674448767834
+  },
+  "class_weights_by_index": {
+    "0": 0.5705536531781975,
+    "2": 0.9851027760118669,
+    "1": 4.30674448767834
+  },
+  "imbalance_ratio": 7.548360200111173,
+  "minority_share": 0.07739798223159162,
+  "severity": "moderate"
+}

@@ -1,0 +1,13 @@
+{
+  "dataset_name": "xBD",
+  "official_page": "https://xview2.org/dataset",
+  "signup_page": "https://xview2.org/signup",
+  "download_page": "https://xview2.org/download-links",
+  "paper": "https://arxiv.org/abs/1911.09296",
+  "license": "CC BY-NC-SA 4.0",
+  "authentication_required": true,
+  "role_in_this_project": "optional future localisation/segmentation dataset",
+  "primary_dataset": "MEDIC",
+  "downloaded": false,
+  "recorded_at_utc": "2026-09-17T18:23:07+00:00"
+}

@@ -1,0 +1,76 @@
+{
+  "primary_task": "damage_severity",
+  "ordinal_tasks": {
+    "damage_severity": [
+      "little_or_none",
+      "mild",
+      "severe"
+    ]
+  },
+  "tasks": {
+    "damage_severity": {
+      "task": "damage_severity",
+      "classes": [
+        "little_or_none",
+        "mild",
+        "severe"
+      ],
+      "num_classes": 3,
+      "class_to_index": {
+        "little_or_none": 0,
+        "mild": 1,
+        "severe": 2
+      }
+    },
+    "informative": {
+      "task": "informative",
+      "classes": [
+        "informative",
+        "not_informative"
+      ],
+      "num_classes": 2,
+      "class_to_index": {
+        "informative": 0,
+        "not_informative": 1
+      }
+    },
+    "humanitarian": {
+      "task": "humanitarian",
+      "classes": [
+        "affected_injured_or_dead_people",
+        "infrastructure_and_utility_damage",
+        "not_humanitarian",
+        "rescue_volunteering_or_donation_effort"
+      ],
+      "num_classes": 4,
+      "class_to_index": {
+        "affected_injured_or_dead_people": 0,
+        "infrastructure_and_utility_damage": 1,
+        "not_humanitarian": 2,
+        "rescue_volunteering_or_donation_effort": 3
+      }
+    },
+    "disaster_types": {
+      "task": "disaster_types",
+      "classes": [
+        "earthquake",
+        "fire",
+        "flood",
+        "hurricane",
+        "landslide",
+        "not_disaster",
+        "other_disaster"
+      ],
+      "num_classes": 7,
+      "class_to_index": {
+        "earthquake": 0,
+        "fire": 1,
+        "flood": 2,
+        "hurricane": 3,
+        "landslide": 4,
+        "not_disaster": 5,
+        "other_disaster": 6
+      }
+    }
+  }
+}

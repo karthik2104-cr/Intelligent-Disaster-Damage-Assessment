@@ -1,0 +1,75 @@
+{
+  "total_samples": 71198,
+  "valid_samples": 68245,
+  "excluded_samples": 2953,
+  "issue_counts": {
+    "issue_missing_file": 0,
+    "issue_unreadable": 1,
+    "issue_bad_extension": 0,
+    "issue_too_small": 57,
+    "issue_missing_label": 0,
+    "issue_invalid_label": 0,
+    "issue_duplicate_content": 2097,
+    "issue_conflicting_duplicate": 840
+  },
+  "exclusion_reasons": {
+    "issue_duplicate_content": 2055,
+    "issue_conflicting_duplicate": 840,
+    "issue_too_small": 57,
+    "issue_unreadable": 1
+  },
+  "duplicate_groups": 1400,
+  "duplicate_extra_copies": 2766,
+  "conflicting_duplicate_groups": 171,
+  "formats": {
+    "JPEG": 66723,
+    "PNG": 1498,
+    "MPO": 24
+  },
+  "modes": {
+    "RGB": 67411,
+    "RGBA": 821,
+    "L": 9,
+    "P": 4
+  },
+  "channels": {
+    "3.0": 67411,
+    "4.0": 821,
+    "1.0": 13
+  },
+  "class_distribution": {
+    "damage_severity": {
+      "little_or_none": 40986,
+      "severe": 21447,
+      "mild": 5812
+    },
+    "disaster_types": {
+      "not_disaster": 35381,
+      "earthquake": 13647,
+      "hurricane": 6535,
+      "flood": 5232,
+      "other_disaster": 3179,
+      "fire": 2715,
+      "landslide": 1556
+    },
+    "informative": {
+      "informative": 36555,
+      "not_informative": 31690
+    },
+    "humanitarian": {
+      "not_humanitarian": 35797,
+      "infrastructure_and_utility_damage": 25135,
+      "affected_injured_or_dead_people": 4163,
+      "rescue_volunteering_or_donation_effort": 3150
+    }
+  },
+  "dimension_summary": {
+    "width_min": 37.0,
+    "width_median": 749.0,
+    "width_max": 8856.0,
+    "height_min": 35.0,
+    "height_median": 562.0,
+    "height_max": 6240.0,
+    "megapixels_median": 0.4264
+  }
+}

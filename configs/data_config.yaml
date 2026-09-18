@@ -1,0 +1,130 @@
+# Central configuration for the Part 1 data pipeline.
+# Every path is resolved relative to the repository root unless absolute.
+# Nothing in the code below this file should hard-code image sizes, seeds or paths.
+
+dataset:
+  name: MEDIC
+  version: v1.0
+  official_url: https://crisisnlp.qcri.org/medic/
+  download_url: https://crisisnlp.qcri.org/data/medic/MEDIC.tar.gz
+  archive_name: MEDIC.tar.gz
+  # Byte size reported by the HTTP Content-Length header of download_url.
+  # Used only as a download-completeness check, never as a dataset statistic.
+  expected_archive_bytes: 10871170591
+  # Directory created inside data/raw when the archive is extracted.
+  root_dirname: MEDIC
+  license: CC BY-NC-SA 4.0
+  # Acquisition source used by scripts/download_dataset.py.
+  #   hf   - the dataset authors' own Hugging Face repo (QCRI/MEDIC). Same
+  #          images, same official splits, ~10x faster than the QCRI host.
+  #   qcri - the canonical MEDIC.tar.gz from crisisnlp.qcri.org.
+  # Both are public and require no credentials.
+  source: hf
+  hf_repo: QCRI/MEDIC
+  hf_revision: main
+
+paths:
+  raw: data/raw
+  interim: data/interim
+  processed: data/processed
+  metadata: data/metadata
+  reports: reports
+
+# The primary supervised task for this project. The other MEDIC tasks are kept
+# available as auxiliary targets so Part 2 can experiment with multi-task setups.
+task:
+  primary: damage_severity
+  auxiliary:
+    - disaster_types
+    - informative
+    - humanitarian
+
+seed: 42
+
+split:
+  # MEDIC ships official train/dev/test TSVs. Preserving them keeps results
+  # comparable with the published baselines, so they are used as-is by default.
+  strategy: official
+  # Only used when strategy == "regenerate".
+  ratios:
+    train: 0.70
+    val: 0.15
+    test: 0.15
+  # Column used to group samples so that images from the same disaster event
+  # cannot straddle two splits when regenerating. `image_id` in MEDIC is a
+  # source identifier and is NOT unique per image, so it must not be used here.
+  group_column: event
+  stratify_column: damage_severity
+  # Unique per-sample key. Also the join key between manifests and cached files.
+  id_column: image_path
+
+preprocessing:
+  image_size: [224, 224]
+  # "rgb" forces 3 channels; palette / grayscale / RGBA inputs are converted.
+  color_mode: rgb
+  interpolation: bilinear
+  # Preserve aspect ratio by resizing the short side then centre-cropping.
+  # Alternatives: "stretch" (direct resize, distorts aspect ratio).
+  resize_mode: resize_shorter_then_center_crop
+  scale: 0.00392156862745098   # 1/255
+  # ImageNet statistics: Part 2 will fine-tune ImageNet-pretrained backbones.
+  normalize:
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+  output_dtype: float32
+  # Channel order of the returned array: "hwc" (Keras-style) or "chw" (Torch-style).
+  channel_order: hwc
+
+# Materialised copies written by scripts/prepare_dataset.py.
+# Decoding + resizing 71k social-media JPEGs is the pipeline bottleneck, so the
+# resized images are cached once instead of on every training epoch.
+cache:
+  enabled: true
+  format: jpeg
+  quality: 95
+  # Cached images are stored at this size; augmentation and the final resize to
+  # `preprocessing.image_size` still happen at load time.
+  size: [256, 256]
+
+augmentation:
+  # Train split only. Never applied to validation or test.
+  enabled: true
+  horizontal_flip: 0.5
+  # Small rotations only: these are photographs with a natural "up", so large
+  # rotations would create views that do not occur at inference time.
+  rotation:
+    probability: 0.5
+    max_degrees: 15
+  random_resized_crop:
+    probability: 0.8
+    scale: [0.7, 1.0]
+    ratio: [0.8, 1.25]
+  brightness:
+    probability: 0.5
+    delta: 0.2
+  contrast:
+    probability: 0.5
+    delta: 0.2
+  saturation:
+    probability: 0.3
+    delta: 0.2
+  # Deliberately disabled - see docs/data_pipeline.md for the reasoning.
+  vertical_flip: 0.0
+  grayscale: 0.0
+
+validation:
+  # Extensions accepted from the raw dataset.
+  allowed_extensions: [.jpg, .jpeg, .png, .gif, .bmp, .webp]
+  # Samples smaller than this in either dimension are flagged as too small to
+  # carry damage evidence at the configured model input size.
+  min_side: 32
+  # Exact-duplicate detection via content hash. Kept separate from the
+  # perceptual near-duplicate scan, which is expensive.
+  hash_algorithm: sha256
+  duplicate_scan: true
+
+imbalance:
+  # Strategy is chosen from the measured distribution in prepare_dataset.py;
+  # the weights themselves are always computed from the real train split.
+  strategy: class_weights
+  class_weight_mode: balanced

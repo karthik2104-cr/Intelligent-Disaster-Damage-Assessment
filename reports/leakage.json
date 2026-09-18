@@ -1,0 +1,12 @@
+{
+  "id_column": "image_path",
+  "duplicate_ids_within_splits": {},
+  "shared_ids": {},
+  "shared_content_hashes": {},
+  "shared_groups": {
+    "test|train": 28,
+    "test|val": 28,
+    "train|val": 28
+  },
+  "has_leakage": false
+}

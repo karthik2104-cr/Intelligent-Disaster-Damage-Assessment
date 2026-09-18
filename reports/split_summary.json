@@ -1,0 +1,60 @@
+{
+  "strategy": "official",
+  "seed": 42,
+  "counts": {
+    "train": 46487,
+    "val": 6128,
+    "test": 15630
+  },
+  "proportions": {
+    "train": 0.6811781082863213,
+    "val": 0.08979412411165653,
+    "test": 0.22902776760202212
+  },
+  "class_distribution": {
+    "train": {
+      "little_or_none": 27159,
+      "severe": 15730,
+      "mild": 3598
+    },
+    "val": {
+      "little_or_none": 3605,
+      "severe": 1830,
+      "mild": 693
+    },
+    "test": {
+      "little_or_none": 10222,
+      "severe": 3887,
+      "mild": 1521
+    }
+  },
+  "class_proportions": {
+    "train": {
+      "little_or_none": 0.584227848645858,
+      "severe": 0.3383741691225504,
+      "mild": 0.07739798223159162
+    },
+    "val": {
+      "little_or_none": 0.5882832898172323,
+      "severe": 0.2986292428198433,
+      "mild": 0.11308746736292428
+    },
+    "test": {
+      "little_or_none": 0.6539987204094689,
+      "severe": 0.2486884197056942,
+      "mild": 0.09731285988483686
+    }
+  },
+  "leakage": {
+    "id_column": "image_path",
+    "duplicate_ids_within_splits": {},
+    "shared_ids": {},
+    "shared_content_hashes": {},
+    "shared_groups": {
+      "test|train": 28,
+      "test|val": 28,
+      "train|val": 28
+    },
+    "has_leakage": false
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "dataset_name": "MEDIC",
+  "dataset_version": "v1.0",
+  "official_page": "https://crisisnlp.qcri.org/medic/",
+  "license": "CC BY-NC-SA 4.0",
+  "source": "hf",
+  "downloaded_at_utc": "2026-09-17T18:32:54+00:00",
+  "authentication_required": false,
+  "hf_repo": "QCRI/MEDIC",
+  "hf_revision": "main",
+  "class_label_order": {
+    "damage_severity": [
+      "little_or_none",
+      "mild",
+      "severe"
+    ],
+    "informative": [
+      "informative",
+      "not_informative"
+    ],
+    "humanitarian": [
+      "affected_injured_or_dead_people",
+      "infrastructure_and_utility_damage",
+      "not_humanitarian",
+      "rescue_volunteering_or_donation_effort"
+    ],
+    "disaster_types": [
+      "earthquake",
+      "flood",
+      "hurricane",
+      "fire",
+      "landslide",
+      "not_disaster",
+      "other_disaster"
+    ]
+  }
+}
