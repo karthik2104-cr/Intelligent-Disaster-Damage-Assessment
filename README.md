@@ -2,6 +2,8 @@
 
 Image-level **3-class damage severity** classification on the [MEDIC](https://crisisnlp.qcri.org/medic/) dataset (`little_or_none`, `mild`, `severe`). The repository covers the data pipeline, four PyTorch models, validation error analysis with Grad-CAM, and a **local** FastAPI + React inference app.
 
+The local UI is branded **Fieldnote / Damage Lab** — a Field Evidence Lab style workspace for photographic intake, severity assessment, and Grad-CAM inspection.
+
 This is a research and engineering project. It is **not** a cloud deployment and is **not** an operational disaster-response system.
 
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
@@ -19,6 +21,62 @@ This is a research and engineering project. It is **not** a cloud deployment and
 After a disaster, photographs arrive faster than teams can inspect them. This project trains classifiers that map a single RGB photograph to one of three **image-level** severity labels. That is useful for triage and filtering, not for locating individual damaged buildings.
 
 The work includes dataset cleaning, class-weighted training, a four-model comparison on **validation** metrics, error and confidence analysis, Grad-CAM visualizations, and a local upload-and-predict application served by EfficientNet-B0 (`models/efficientnet_b0/best.pt`) because that checkpoint had the highest **validation macro-F1** among the models tested.
+
+### Objectives
+
+- Clean and prepare MEDIC official train / validation / test splits.
+- Train and compare four PyTorch architectures for 3-class severity classification.
+- Evaluate on validation (and a one-shot test pass) with confusion, confidence, and Grad-CAM analysis.
+- Ship a local FastAPI + React demo that runs the selected EfficientNet-B0 checkpoint.
+
+### Severity classes
+
+| Label | Meaning |
+|---|---|
+| `little_or_none` | Little or none |
+| `mild` | Mild |
+| `severe` | Severe |
+
+These are **photograph-level** labels. The model does not detect individual buildings or produce segmentation masks.
+
+## Field Evidence Lab UI
+
+The React frontend presents the demo as a compact forensic inspection workspace:
+
+- Bone-white canvas, charcoal typography, muted slate borders, burnt-orange accents.
+- Numbered sections: brief → evidence intake → visual evidence → assessment report.
+- Drag-and-drop / file picker intake with preview, analyze, Grad-CAM, and reset.
+- Side-by-side source image and Grad-CAM activation overlay (with accessible enlarge).
+- Editorial severity report with confidence, inference time, model/device, and class probabilities.
+- Responsive stacking and a Source / Overlay / Both toggle on smaller screens.
+
+Grad-CAM highlights activations for the predicted class. It is an explanatory visualization, **not** causal proof and **not** building-level localization.
+
+## Screenshots
+
+Captured from the running local app against EfficientNet-B0 on a real MEDIC demo image (not the official test set).
+
+### Image intake (empty workspace)
+
+![Field Evidence Lab empty intake](docs/screenshots/field-lab-intake.png)
+
+### Source image selected
+
+![Field Evidence Lab source image workspace](docs/screenshots/field-lab-source.png)
+
+### Assessment with Grad-CAM
+
+![Field Evidence Lab assessment and Grad-CAM](docs/screenshots/field-lab-assessment.png)
+
+*Same capture is also mirrored at [`reports/figures/app_ui.png`](reports/figures/app_ui.png) for continuity with earlier README links.*
+
+### Assessment report detail
+
+![Assessment report with probabilities](docs/screenshots/field-lab-report.png)
+
+### Mobile layout
+
+![Field Evidence Lab mobile layout](docs/screenshots/field-lab-mobile.png)
 
 ## Key results (validation)
 
@@ -68,7 +126,7 @@ Application inference:
 
 ```mermaid
 flowchart LR
-  R[React] --> API[FastAPI]
+  R[React Field Evidence Lab] --> API[FastAPI]
   API --> S[Inference service]
   S --> M[EfficientNet-B0]
   M --> P[Class + probabilities]
@@ -93,94 +151,63 @@ MEDIC provides **image-level** damage severity labels; it does not provide bound
 
 Classes: `little_or_none`, `mild`, `severe`. Auxiliary MEDIC labels (disaster type, informativeness, humanitarian) exist in the source files but are not the training target.
 
+A small local development subset (~100 images) may exist under `data/demo/` for demos; it is **not** the training set. Images there are gitignored.
+
 Details: [`docs/dataset.md`](docs/dataset.md).
 
 ## Data pipeline
 
 1. Download MEDIC (`scripts/download_dataset.py`).
-2. Verify files on disk (`scripts/verify_dataset.py`).
-3. Clean unreadable, tiny, duplicate, and conflicting-label rows (`scripts/prepare_dataset.py`).
-4. Keep the **official** train / dev / test assignment (mapped to train / val / test).
-5. Convert to RGB; short-side resize; center crop; **224×224**; ImageNet mean/std.
-6. Train-only augmentation: horizontal flip, ±15° rotation, crop, brightness/contrast/saturation.
-7. Balanced **class weights from the train split** (`data/metadata/class_weights.json`).
+2. Verify files and labels (`scripts/verify_dataset.py`).
+3. Clean and write official-split manifests (`scripts/prepare_dataset.py`).
+4. Train / evaluate with configs under `configs/`.
 
-Validation and test use the same geometric/normalization pipeline **without** augmentation. PyTorch receives CHW tensors only at the dataset/API boundary. See [`docs/data_pipeline.md`](docs/data_pipeline.md).
+More detail: [`docs/data_pipeline.md`](docs/data_pipeline.md).
 
-## Models
+## Models and training
 
-All heads output **3 logits**. Training code: [`docs/training.md`](docs/training.md).
+Four architectures are implemented under `ml/models/`:
 
-| Model | Role |
-|---|---|
-| **LinearBaseline** | 8×8 global average pool + MLP. A floor, not a CNN. |
-| **CustomCNN** | Four conv–BN–ReLU blocks from scratch, GAP, dropout, 3-class head (~1.17M params). |
-| **ResNet-50** | ImageNet `IMAGENET1K_V2`, new 3-class `fc`, then last-block (`layer4`) fine-tune. |
-| **EfficientNet-B0** | ImageNet `IMAGENET1K_V1`, new 3-class classifier, then last-block (`features.7`) fine-tune. |
+- LinearBaseline
+- CustomCNN
+- ResNet-50 (ImageNet-pretrained transfer)
+- EfficientNet-B0 (ImageNet-pretrained transfer)
 
-The served application uses EfficientNet-B0 `best.pt` (validation macro-F1). ResNet-50 remains the higher-accuracy alternative on the same split.
+Training uses AdamW, class-balanced CrossEntropyLoss, and validation macro-F1 for checkpointing. The official test split is isolated from selection.
 
-## Training strategy
+Training notes: [`docs/training.md`](docs/training.md).
 
-- **Framework:** PyTorch 2.6
-- **Loss:** `CrossEntropyLoss` with train-split class weights
-- **Optimizer:** AdamW; ReduceLROnPlateau on validation loss
-- **Selection:** best **validation macro-F1**; early stopping on that metric
-- **Hardware:** CUDA + AMP when available (RTX 3050 Ti in the recorded runs)
-- **Seed:** 42
+## Evaluation and explainability
 
-The dataset is imbalanced, particularly for the mild class, so macro-F1 was used to evaluate performance across classes rather than relying only on accuracy.
+Validation evaluation produces confusion matrices, confidence summaries, error cases, and Grad-CAM panels under `reports/figures/` and `reports/evaluation/`.
 
-## Error analysis
-
-Part 3 scored **validation** predictions from `best.pt` only ([`docs/evaluation.md`](docs/evaluation.md)).
-
-- Mild remains the hardest class (best val Mild F1 = 0.353, EfficientNet-B0).
-- True mild is more often predicted **severe** than `little_or_none` on both transfer models.
-- EfficientNet-B0 recovered more true mild cases and also produced more mild **false positives**.
-- ResNet-50 had higher validation accuracy.
-- On softmax confidence (high ≥ 0.80), ResNet-50 had more high-confidence errors (704) than EfficientNet-B0 (217).
-
-Normalized validation confusion matrices:
-
-| EfficientNet-B0 | ResNet-50 |
-|---|---|
-| ![EfficientNet-B0 confusion](reports/figures/efficientnet_b0_cm_normalized.png) | ![ResNet-50 confusion](reports/figures/resnet50_cm_normalized.png) |
-
-## Explainability
-
-Grad-CAM (last `Conv2d`, **predicted** class) was run for ResNet-50 and EfficientNet-B0. It visualizes spatial activations associated with a prediction. It is **not** causal proof of why the model assigned a label.
+![EfficientNet-B0 confusion](reports/figures/efficientnet_b0_cm_normalized.png)
+![ResNet-50 confusion](reports/figures/resnet50_cm_normalized.png)
 
 ![EfficientNet-B0 Grad-CAM examples](reports/figures/efficientnet_b0_gradcam.png)
 
-*EfficientNet-B0 Grad-CAM overlays on validation examples (predicted class).*
+*Grad-CAM panels above are validation evaluation figures, separate from the live application screenshots.*
 
-![ResNet-50 Grad-CAM examples](reports/figures/resnet50_gradcam.png)
-
-*ResNet-50 Grad-CAM overlays on validation examples (predicted class).*
+Evaluation notes: [`docs/evaluation.md`](docs/evaluation.md).
 
 ## Application
 
 Local demo only: React + Vite → FastAPI → EfficientNet-B0 `best.pt`.
 
-- Upload / preview an image
-- Predict class, probabilities, confidence, inference time
-- Optional Grad-CAM overlay
-- Reset; loading and error states
-- Model loaded **once** at API startup
-- CUDA when available, CPU otherwise
+| Feature | Behavior |
+|---|---|
+| Upload / drag-and-drop | JPEG, PNG, WebP, GIF, BMP (API limit 8 MB) |
+| Preview | Source frame with filename and natural dimensions when available |
+| Predict | Class, probabilities, confidence, inference time, model, device |
+| Grad-CAM | Optional overlay PNG from `POST /explain` |
+| Reset | Clears file, prediction, and overlay |
+| Health | API readiness, model, and device in the masthead |
 
-Setup: [`docs/application.md`](docs/application.md).
-
-### Screenshot
-
-![Local React UI showing a prediction](reports/figures/app_ui.png)
-
-*Local UI (`http://localhost:5173`) calling `http://127.0.0.1:8000`. Example uses a MEDIC **validation** image, not the test set.*
+Setup detail: [`docs/application.md`](docs/application.md).
 
 ## API
 
-Run from the repo root with `.venv` active:
+Run from the repository root with `.venv` active:
 
 ```powershell
 python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
@@ -230,9 +257,9 @@ Load time is separate from per-image inference. The weights stay in memory after
 ```text
 ├── backend/                 FastAPI (health, predict, explain)
 ├── configs/                 data_config.yaml, train_config.yaml
-├── data/                    raw / processed / metadata (imagery gitignored)
-├── docs/                    dataset, pipeline, training, evaluation, application
-├── frontend/                React + Vite UI
+├── data/                    raw / processed / metadata / optional demo subset
+├── docs/                    guides + screenshots/
+├── frontend/                React + Vite Field Evidence Lab UI
 ├── ml/                      data, models, engine, eval
 ├── models/                  checkpoints (gitignored; keep best.pt locally)
 ├── notebooks/               01–06 exploration and experiment viewers
@@ -278,15 +305,44 @@ npm run dev
 
 `frontend/.env` should contain `VITE_API_URL=http://127.0.0.1:8000` (or `http://localhost:8000`). Do not commit `.env`. UI: `http://127.0.0.1:5173`.
 
+### Environment variables
+
+| Variable | Where | Purpose |
+|---|---|---|
+| `VITE_API_URL` | `frontend/.env` | Base URL for FastAPI (default in code: `http://127.0.0.1:8000`) |
+
 Training and full evaluation commands (optional) are in [`docs/training.md`](docs/training.md) and [`docs/evaluation.md`](docs/evaluation.md).
 
-## Testing
+## Usage
+
+1. Start FastAPI, then the Vite frontend.
+2. Confirm the masthead shows API linked (model + device).
+3. Drop or select a disaster photograph.
+4. Click **Analyze damage** for the predicted severity, probabilities, confidence, and inference time.
+5. Optionally click **Generate Grad-CAM** to inspect the activation overlay.
+6. Use **Reset** to clear the workspace.
+
+## Testing and build
 
 ```powershell
 python -m pytest tests -q
 ```
 
-**40 passed** (data pipeline, PyTorch components, evaluation helpers, FastAPI). Tests do not retrain models.
+```powershell
+cd frontend
+npm run build
+```
+
+**40 passed** pytest suite (data pipeline, PyTorch components, evaluation helpers, FastAPI). Tests do not retrain models.
+
+## Troubleshooting
+
+| Symptom | Check |
+|---|---|
+| UI shows backend unavailable | FastAPI running? `VITE_API_URL` matches host/port? CORS origin matches Vite URL? |
+| Predict fails | File ≤ 8 MB and a supported image type? Checkpoint present at `models/efficientnet_b0/best.pt`? |
+| Slow first request | Cold CUDA / model warmup; later requests are typically faster |
+| Port already in use | Use another port for uvicorn and update `VITE_API_URL` accordingly |
 
 ## Limitations
 

@@ -1,7 +1,6 @@
 # Application (Part 4)
 
-Local FastAPI + React demo. Not a cloud deployment and not an operational
-disaster-response system.
+Local FastAPI + React demo with the **Fieldnote / Damage Lab** (Field Evidence Lab) UI. Not a cloud deployment and not an operational disaster-response system.
 
 ## Model
 
@@ -10,6 +9,18 @@ disaster-response system.
 - Reason it is served: highest **validation** macro-F1 among the four Part 2/3 models
 - Loaded once at API startup
 - Preprocessing: Part 1 eval pipeline (RGB, short-side resize, center crop, 224, ImageNet norm) then HWC→CHW
+
+## UI overview
+
+The React app (`frontend/`) presents a single-page inspection workspace:
+
+1. **Evidence intake** — drag-and-drop or file picker; analyze / Grad-CAM / reset
+2. **Visual evidence** — source photograph and Grad-CAM activation overlay
+3. **Assessment report** — predicted severity, confidence, inference time, model/device, class probabilities
+
+Screenshots: [`docs/screenshots/`](screenshots/).
+
+Grad-CAM highlights activations for the predicted class. It is not causal proof and not building-level segmentation.
 
 ## Run
 
@@ -64,4 +75,11 @@ Field values are computed; this is the shape only:
   "inference_time_ms": 12.3,
   "device": "cuda"
 }
+```
+
+## Frontend build
+
+```powershell
+cd frontend
+npm run build
 ```

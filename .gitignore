@@ -27,6 +27,13 @@ data/processed/**
 !data/interim/.gitkeep
 !data/processed/.gitkeep
 !data/README.md
+
+# Local 100-image MEDIC demo copies (images only; README + CSV may be tracked)
+data/demo/**
+!data/demo/
+!data/demo/README.md
+!data/demo/demo_manifest.csv
+!data/demo/**/.gitkeep
 *.tar.gz
 *.zip
 *.part
